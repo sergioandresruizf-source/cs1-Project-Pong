@@ -74,7 +74,7 @@ def main():
             keys = pygame.key.get_pressed()
             p_dir = (keys[pygame.K_s] or keys[pygame.K_DOWN]) - (keys[pygame.K_w] or keys[pygame.K_UP])
             game.update(dt, p_dir, bot.decide(game))
-            draw_game(screen, game, big, small)
+            draw_game(screen, game, big, small, sprites)
             if game.state == "gameover":
                 scene = "gameover"
         else:
