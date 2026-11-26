@@ -4,13 +4,15 @@ import pygame
 from config import *
 from physics import Game
 from bot import SimpleBot
+from ui import FuentePixel, cargar_imagen, teñir
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-
+AZUL = (90, 200, 255)
+ROJO = (255, 90, 90)
 
 def draw_text(screen, font, text, center):
-    img = font.render(text, False, WHITE)
+    img = font.render(text)
     screen.blit(img, img.get_rect(center=center))
 
 
@@ -21,11 +23,11 @@ def draw_menu(screen, big, small):
     draw_text(screen, small, "ENTER", (WIDTH // 2, 540))
 
 
-def draw_game(screen, game, big, small):
+def draw_game(screen, game, big, small, sprites):
     pygame.draw.rect(screen, WHITE, (WIDTH // 2 - 2, 0, 5, HEIGHT))
-    pygame.draw.rect(screen, WHITE, game.left.rect)
-    pygame.draw.rect(screen, WHITE, game.right.rect)
-    pygame.draw.rect(screen, WHITE, game.ball.rect)
+    screen.blit(sprites["paleta_izq"], game.left.rect)
+    screen.blit(sprites["paleta_der"], game.right.rect)
+    screen.blit(sprites["pelota"], game.ball.rect)
     draw_text(screen, big, str(game.score["left"]), (250, 45))
     draw_text(screen, big, str(game.score["right"]), (775, 45))
     draw_text(screen, small, "AI", (975, 38))
@@ -42,8 +44,15 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Pong")
     clock = pygame.time.Clock()
-    big = pygame.font.Font(None, 140)
-    small = pygame.font.Font(None, 70)
+    big = FuentePixel("PONGfont.png", escala=5)     # letras de 80 px
+    small = FuentePixel("PONGfont.png", escala=3)   # letras de 48 px
+
+    paleta = cargar_imagen("Paleta.png", (PADDLE_W, PADDLE_H))
+    sprites = {
+        "paleta_izq": teñir(paleta, AZUL),
+        "paleta_der": teñir(paleta, ROJO),
+        "pelota": cargar_imagen("Pelota.png", (BALL_SIZE, BALL_SIZE)),
+    }
 
     game, bot = Game(), SimpleBot()
     scene = "menu"  # menu | game | gameover
@@ -69,7 +78,7 @@ def main():
             if game.state == "gameover":
                 scene = "gameover"
         else:
-            draw_game(screen, game, big, small)
+            draw_game(screen, game, big, small, sprites)
             draw_gameover(screen, game, big, small)
         pygame.display.flip()
 
